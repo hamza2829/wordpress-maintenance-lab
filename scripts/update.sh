@@ -35,7 +35,7 @@ if [[ "${LAB_INJECT_FAILURE:-0}" == 1 ]]; then
   dc run --rm -T --user 0:0 --entrypoint sh cli -c 'cp /lab/tests/fixtures/broken-plugin.php /var/www/html/wp-content/plugins/nordlicht-lab/nordlicht-lab.php'
   dc exec -T wordpress rm -f /var/www/html/.maintenance
 else
-  wp maintenance-mode deactivate
+  deactivate_maintenance
 fi
 dc restart wordpress
 bash "$SCRIPT_DIR/quick-check.sh"

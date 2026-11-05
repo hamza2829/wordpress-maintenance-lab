@@ -30,7 +30,7 @@ dc run --rm -T --user 0:0 --entrypoint sh cli -c "tar -xzf '/artifacts/$relative
 wp --skip-plugins --skip-themes db import "/artifacts/$relative/database.sql"
 wp option update home "$URL"
 wp option update siteurl "$URL"
-wp maintenance-mode deactivate
+deactivate_maintenance
 dc start wordpress
 wp eval-file /lab/scripts/php/inventory.php > "$ROOT/artifacts/restored-content-$LAB_PROJECT.json"
 cmp "$backup/content.json" "$ROOT/artifacts/restored-content-$LAB_PROJECT.json"

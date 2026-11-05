@@ -19,6 +19,13 @@ chmod 0777 "$ROOT/artifacts"
 dc() { docker compose --project-directory "$ROOT" -f "$ROOT/compose.yaml" -p "$LAB_PROJECT" "$@"; }
 wp() { dc run --rm -T cli wp --url="$URL" "$@"; }
 message() { printf '[%s] %s\n' "$LAB_PROJECT" "$*"; }
+deactivate_maintenance() {
+  if wp maintenance-mode is-active >/dev/null 2>&1; then
+    wp maintenance-mode deactivate
+  else
+    message 'Maintenance mode is already inactive.'
+  fi
+}
 wait_files() {
   local attempt
   for attempt in {1..60}; do
