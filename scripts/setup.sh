@@ -21,7 +21,7 @@ wp plugin install hello-dolly --version="$PLUGIN_OLD"
 dc run --rm -T --user 0:0 --entrypoint sh cli -c 'cp -R /lab/site/themes/nordlicht-child /var/www/html/wp-content/themes/ && cp -R /lab/site/plugins/nordlicht-lab /var/www/html/wp-content/plugins/ && chown -R 33:33 /var/www/html/wp-content'
 wp plugin activate nordlicht-lab
 wp theme activate nordlicht-child
-wp option update WPLANG de_DE
+wp language core install de_DE --activate
 wp eval-file /lab/scripts/php/seed.php
 wp rewrite structure '/%postname%/'
 wp rewrite flush
