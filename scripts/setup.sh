@@ -23,8 +23,9 @@ wp plugin activate nordlicht-lab
 wp theme activate nordlicht-child
 wp option update WPLANG de_DE
 wp eval-file /lab/scripts/php/seed.php
-wp rewrite structure '/%postname%/' --hard
-wp rewrite flush --hard
+wp rewrite structure '/%postname%/'
+wp rewrite flush
+dc run --rm -T --user 0:0 --entrypoint sh cli -c 'cp /lab/site/apache.htaccess /var/www/html/.htaccess && chown 33:33 /var/www/html/.htaccess'
 dc restart wordpress
 bash "$SCRIPT_DIR/quick-check.sh"
 wp eval-file /lab/scripts/php/versions.php > "$ROOT/artifacts/versions-before.json"

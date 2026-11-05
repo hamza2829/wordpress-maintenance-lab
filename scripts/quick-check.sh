@@ -5,7 +5,7 @@ SCRIPT_DIR=$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)
 source "$SCRIPT_DIR/lib.sh"
 temporary=$(mktemp)
 trap 'rm -f -- "$temporary"' EXIT
-curl --fail --silent --show-error --retry 15 --retry-connrefused --retry-delay 1 "$URL/" > "$temporary"
+curl --fail --silent --show-error --retry 15 --retry-all-errors --retry-delay 1 "$URL/" > "$temporary"
 grep -q 'Nordlicht' "$temporary"
 if grep -Eiq 'Fatal error|Parse error|Warning:|Notice:' "$temporary"; then
   message 'ERROR: PHP error text in the response.' >&2
