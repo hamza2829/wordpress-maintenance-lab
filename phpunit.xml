@@ -1,0 +1,12 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<phpunit bootstrap="tests/php/bootstrap.php" colors="true" cacheDirectory=".phpunit.cache" failOnWarning="true">
+  <php>
+    <env name="WORDPRESS_DB_HOST" value="127.0.0.1:3307" force="true"/>
+    <env name="WORDPRESS_DB_NAME" value="wordpress" force="true"/>
+    <env name="WORDPRESS_DB_USER" value="wordpress" force="true"/>
+    <env name="WORDPRESS_DB_PASSWORD" value="lab-db-only" force="true"/>
+    <env name="WORDPRESS_TABLE_PREFIX" value="wml_" force="true"/>
+  </php>
+  <testsuites><testsuite name="Nordlicht plugin"><directory>tests/php</directory></testsuite></testsuites>
+  <logging><junit outputFile="artifacts/phpunit.xml"/></logging>
+</phpunit>

@@ -1,0 +1,10 @@
+<?xml version="1.0"?>
+<ruleset name="WordPress maintenance lab">
+  <description>WordPress coding standard for the custom child theme and plugin.</description>
+  <file>site/themes/nordlicht-child</file>
+  <file>site/plugins/nordlicht-lab</file>
+  <arg name="extensions" value="php"/>
+  <arg name="colors"/>
+  <rule ref="WordPress"/>
+  <config name="minimum_supported_wp_version" value="6.8"/>
+</ruleset>

@@ -1,0 +1,108 @@
+name: WordPress maintenance CI
+on:
+  push:
+  pull_request:
+  workflow_dispatch:
+permissions:
+  contents: read
+defaults:
+  run:
+    shell: bash
+jobs:
+  quality:
+    runs-on: ubuntu-latest
+    timeout-minutes: 15
+    steps:
+      - uses: actions/checkout@v4
+      - uses: shivammathur/setup-php@v2
+        with:
+          php-version: '8.3'
+          tools: composer:v2
+      - name: Prepare quality tools
+        run: |
+          mkdir -p artifacts
+          composer install --no-interaction --prefer-dist
+      - name: WordPress coding standard
+        id: phpcs
+        run: vendor/bin/phpcs --report=full | tee artifacts/phpcs.log
+      - name: Save suggested formatting patch for review
+        if: failure() && steps.phpcs.outcome == 'failure'
+        run: |
+          set +e
+          vendor/bin/phpcbf > artifacts/phpcbf.log 2>&1
+          git diff -- site/ > artifacts/phpcs-fixes.patch
+          exit 0
+      - name: ShellCheck
+        if: always()
+        run: shellcheck -x scripts/*.sh ssh/entrypoint.sh 2>&1 | tee artifacts/shellcheck.log
+      - name: JavaScript syntax
+        if: always()
+        run: |
+          for source in site/themes/nordlicht-child/lab.js tests/browser/*.js playwright.config.js; do
+            node --check "$source" || exit 1
+          done
+      - uses: actions/upload-artifact@v4
+        if: always()
+        with:
+          name: wordpress-quality-results
+          path: artifacts/
+  maintenance-lab:
+    runs-on: ubuntu-latest
+    timeout-minutes: 40
+    steps:
+      - uses: actions/checkout@v4
+      - uses: shivammathur/setup-php@v2
+        with:
+          php-version: '8.3'
+          extensions: mysqli, mbstring, dom, xml, xmlwriter
+          tools: composer:v2
+      - uses: actions/setup-node@v4
+        with:
+          node-version: '22'
+      - name: Prepare runner dependencies
+        run: |
+          mkdir -p artifacts .runtime
+          chmod 0777 artifacts
+          composer install --no-interaction --prefer-dist
+          npm install --ignore-scripts
+          npx playwright install --with-deps chromium
+          cp composer.lock package-lock.json artifacts/
+      - name: Set up intentionally older WordPress and plugin
+        run: bash scripts/setup.sh 2>&1 | tee artifacts/setup.log
+      - name: Run real WordPress plugin PHPUnit tests
+        run: |
+          mkdir -p .runtime/wp-tests
+          docker compose -p wmlab cp wordpress:/var/www/html/. .runtime/wp-tests/
+          vendor/bin/phpunit --configuration phpunit.xml 2>&1 | tee artifacts/phpunit.log
+      - name: Browser checks before updates
+        run: bash scripts/checks.sh baseline 2>&1 | tee artifacts/baseline.log
+      - name: Prove failed updates roll back files and database
+        run: bash scripts/test-rollback.sh 2>&1 | tee artifacts/rollback-proof.log
+      - name: Apply updates and run browser checks again
+        run: |
+          bash scripts/update.sh 2>&1 | tee artifacts/update.log
+          python3 ci/verify_updates.py
+      - name: Back up updated site and restore into clean volumes
+        run: |
+          bash scripts/backup.sh verified-release 2>&1 | tee artifacts/backup.log
+          bash scripts/test-restore.sh artifacts/backups/verified-release 2>&1 | tee artifacts/restore.log
+      - name: Test SSH keys, rsync deployment, and rejected login
+        run: bash scripts/test-ssh.sh 2>&1 | tee artifacts/ssh-tests.log
+      - name: Report measured tests and version changes
+        run: python3 ci/measure.py
+      - name: Capture container logs
+        if: always()
+        run: |
+          docker compose -p wmlab --profile ssh logs --no-color > artifacts/containers.log 2>&1 || true
+          docker compose -p wmlrestore logs --no-color > artifacts/restore-containers.log 2>&1 || true
+      - uses: actions/upload-artifact@v4
+        if: always()
+        with:
+          name: wordpress-maintenance-results
+          path: artifacts/
+          retention-days: 14
+      - name: Remove only disposable CI containers and volumes
+        if: always()
+        run: |
+          docker compose -p wmlab --profile ssh down -v --remove-orphans
+          docker compose -p wmlrestore down -v --remove-orphans
