@@ -85,9 +85,19 @@ PHPUnit loads the installed WordPress code against the disposable database and t
 
 <!-- CI_METRICS_START -->
 | Metric | Measured in CI |
-| --- | --- |
-| Tests and update/restore evidence | Awaiting a completed CI run |
+| --- | ---: |
+| PHPUnit plugin tests | 16 |
+| Distinct Playwright tests | 9 |
+| Playwright executions across four phases | 36 |
+| Shell scenarios | 6 |
+| Distinct test cases | 31 |
+| Total test executions | 58 |
+| Failures / skipped | 0 / 0 |
 <!-- CI_METRICS_END -->
+
+Measured on 5 November 2026 in [CI run 42052861321](https://github.com/hamza2829/wordpress-maintenance-lab/actions/runs/42052861321), commit `fea3a67bd7b6443c38fe0986dba646562e0c0105`. All four browser phases passed nine tests each. Both the maintenance job and quality job passed. The actual [measurement JSON](docs/ci-measurements.json), [restore comparison](docs/restore-proof.json), and [passed shell scenarios](docs/shell-cases.json) are preserved from that run.
+
+That run verified WordPress `7.1.3` to `7.1.4` and Hello Dolly `1.6` to `1.7.2`. Twenty Twenty-One was already current at `2.9`, so it did not change. The custom child theme stayed active. Clean restore matched all three post records and four page records, the uploads, and content SHA-256 `615f4ebb75a630cad5c6865ab5a827637ca0f601db6e598b7a566bf93a14ef32`. The inventory includes every stored post/page status, including drafts, rather than only published content.
 
 `ci/measure.py` counts real JUnit test cases and shell scenarios recorded only after their assertions pass. It avoids counting nested PHPUnit suites twice. Repeated browser executions are shown separately from distinct test cases. The measured version transition and restore content hash are recorded in JSON artifacts. No coverage figure is claimed.
 

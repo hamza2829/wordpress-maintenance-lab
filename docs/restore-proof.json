@@ -1,0 +1,20 @@
+{
+  "clean_instance": true,
+  "source_volume": "wmlab_site",
+  "target_volume": "wmlrestore_site",
+  "source": {
+    "counts": {
+      "post": 3,
+      "page": 4
+    },
+    "content_sha256": "615f4ebb75a630cad5c6865ab5a827637ca0f601db6e598b7a566bf93a14ef32"
+  },
+  "restored": {
+    "counts": {
+      "post": 3,
+      "page": 4
+    },
+    "content_sha256": "615f4ebb75a630cad5c6865ab5a827637ca0f601db6e598b7a566bf93a14ef32"
+  },
+  "uploads_match": true
+}

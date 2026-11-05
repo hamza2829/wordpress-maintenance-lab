@@ -1,0 +1,37 @@
+{
+  "phpunit_tests": 16,
+  "playwright_distinct_tests": 9,
+  "playwright_by_phase": {
+    "baseline": 9,
+    "rollback": 9,
+    "updated": 9,
+    "restored": 9
+  },
+  "playwright_executions": 36,
+  "shell_scenarios": 6,
+  "distinct_test_cases": 31,
+  "total_test_executions": 58,
+  "failures": 0,
+  "skipped": 0,
+  "before_versions": {
+    "core": "7.1.3",
+    "hello_dolly": "1.6",
+    "parent_theme": "2.9",
+    "child_theme": "nordlicht-child"
+  },
+  "after_versions": {
+    "core": "7.1.4",
+    "hello_dolly": "1.7.2",
+    "parent_theme": "2.9",
+    "child_theme": "nordlicht-child"
+  },
+  "restored_content": {
+    "counts": {
+      "post": 3,
+      "page": 4
+    },
+    "content_sha256": "615f4ebb75a630cad5c6865ab5a827637ca0f601db6e598b7a566bf93a14ef32"
+  },
+  "commit": "fea3a67bd7b6443c38fe0986dba646562e0c0105",
+  "run_url": "https://github.com/hamza2829/wordpress-maintenance-lab/actions/runs/42052861321"
+}
