@@ -72,7 +72,7 @@ jobs:
       - name: Install the Chromium browser on the runner
         timeout-minutes: 8
         run: |
-          npx playwright install --with-deps chromium
+          npx playwright install --only-shell chromium
           cp composer.lock package-lock.json artifacts/
       - name: Set up intentionally older WordPress and plugin
         run: bash scripts/setup.sh 2>&1 | tee artifacts/setup.log
