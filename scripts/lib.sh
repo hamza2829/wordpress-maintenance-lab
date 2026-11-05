@@ -17,7 +17,7 @@ export ROOT URL
 mkdir -p "$ROOT/artifacts" "$ROOT/.runtime"
 chmod 0777 "$ROOT/artifacts"
 dc() { docker compose --project-directory "$ROOT" -f "$ROOT/compose.yaml" -p "$LAB_PROJECT" "$@"; }
-wp() { dc run --rm -T cli wp "$@"; }
+wp() { dc run --rm -T cli wp --url="$URL" "$@"; }
 message() { printf '[%s] %s\n' "$LAB_PROJECT" "$*"; }
 wait_files() {
   local attempt
