@@ -15,14 +15,25 @@ release="$(git -C "$ROOT" rev-parse --short=12 HEAD)-$(date -u +%Y%m%dT%H%M%S)-$
 remote="$DEPLOY_ROOT/releases/$release"
 mkdir -p "$ROOT/.runtime" "$ROOT/artifacts"
 printf 'Preparing release %s on %s.\n' "$release" "$SSH_TARGET"
-ssh "${options[@]}" "$SSH_TARGET" "mkdir -p '$remote/themes' '$remote/plugins'"
+ssh "${options[@]}" "$SSH_TARGET" bash -s -- "$remote" <<'REMOTE'
+set -euo pipefail
+mkdir -p "$1/themes" "$1/plugins"
+REMOTE
 printf -v transport '%q ' ssh "${options[@]}"
 rsync -rlt --delete --safe-links -e "$transport" "$ROOT/site/themes/nordlicht-child/" "$SSH_TARGET:$remote/themes/nordlicht-child/"
 rsync -rlt --delete --safe-links -e "$transport" "$ROOT/site/plugins/nordlicht-lab/" "$SSH_TARGET:$remote/plugins/nordlicht-lab/"
 (cd "$ROOT/site" && find themes/nordlicht-child plugins/nordlicht-lab -type f -print0 | sort -z | xargs -0 sha256sum) > "$ROOT/.runtime/deploy-expected.sha256"
-ssh "${options[@]}" "$SSH_TARGET" "cd '$remote' && find themes/nordlicht-child plugins/nordlicht-lab -type f -print0 | sort -z | xargs -0 sha256sum" > "$ROOT/.runtime/deploy-actual.sha256"
+ssh "${options[@]}" "$SSH_TARGET" bash -s -- "$remote" > "$ROOT/.runtime/deploy-actual.sha256" <<'REMOTE'
+set -euo pipefail
+cd "$1"
+find themes/nordlicht-child plugins/nordlicht-lab -type f -print0 | sort -z | xargs -0 sha256sum
+REMOTE
 cmp "$ROOT/.runtime/deploy-expected.sha256" "$ROOT/.runtime/deploy-actual.sha256"
-ssh "${options[@]}" "$SSH_TARGET" "ln -s 'releases/$release' '$DEPLOY_ROOT/.current-$release' && mv -Tf '$DEPLOY_ROOT/.current-$release' '$DEPLOY_ROOT/current'"
+ssh "${options[@]}" "$SSH_TARGET" bash -s -- "$DEPLOY_ROOT" "$release" <<'REMOTE'
+set -euo pipefail
+ln -s "releases/$2" "$1/.current-$2"
+mv -Tf "$1/.current-$2" "$1/current"
+REMOTE
 cp "$ROOT/.runtime/deploy-actual.sha256" "$ROOT/artifacts/deployed-files.sha256"
 printf '%s\n' "$release" > "$ROOT/artifacts/deployed-release.txt"
 printf 'Deployment passed: every file hash matched before the current link changed.\n'

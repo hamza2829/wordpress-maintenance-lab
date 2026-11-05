@@ -4,6 +4,7 @@
  *
  * @package NordlichtChild
  */
+
 ?>
 <footer class="lab-footer">
 	<div class="lab-wrap">

@@ -59,12 +59,19 @@ jobs:
       - uses: actions/setup-node@v4
         with:
           node-version: '22'
-      - name: Prepare runner dependencies
+      - name: Prepare PHP test dependencies
+        timeout-minutes: 5
         run: |
           mkdir -p artifacts .runtime
           chmod 0777 artifacts
           composer install --no-interaction --prefer-dist
+      - name: Prepare Node test dependencies
+        timeout-minutes: 5
+        run: |
           npm install --ignore-scripts
+      - name: Install the Chromium browser on the runner
+        timeout-minutes: 8
+        run: |
           npx playwright install --with-deps chromium
           cp composer.lock package-lock.json artifacts/
       - name: Set up intentionally older WordPress and plugin

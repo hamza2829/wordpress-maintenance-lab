@@ -4,6 +4,7 @@
  *
  * @package NordlichtChild
  */
+
 ?>
 <!doctype html>
 <html <?php language_attributes(); ?>>
@@ -20,7 +21,15 @@
 	<div class="lab-wrap">
 		<a class="lab-brand" href="<?php echo esc_url( home_url( '/' ) ); ?>">Nordlicht<span><?php esc_html_e( 'Reparaturatelier · Laborseite', 'nordlicht-child' ); ?></span></a>
 		<nav aria-label="<?php esc_attr_e( 'Hauptnavigation', 'nordlicht-child' ); ?>">
-			<?php wp_nav_menu( array( 'theme_location' => 'primary', 'container' => false, 'fallback_cb' => false ) ); ?>
+			<?php
+			wp_nav_menu(
+				array(
+					'theme_location' => 'primary',
+					'container'      => false,
+					'fallback_cb'    => false,
+				)
+			);
+			?>
 		</nav>
 	</div>
 </header>

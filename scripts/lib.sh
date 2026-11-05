@@ -23,6 +23,7 @@ wait_files() {
   local attempt
   for attempt in {1..60}; do
     if dc exec -T wordpress test -f /var/www/html/wp-includes/version.php; then return 0; fi
+    message "Waiting for WordPress files ($attempt/60)."
     sleep 2
   done
   message 'ERROR: WordPress files did not become ready.' >&2

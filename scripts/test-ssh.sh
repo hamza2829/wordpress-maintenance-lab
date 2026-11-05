@@ -17,6 +17,7 @@ options=(-p "$SSH_PORT" -i "$SSH_KEY" -o BatchMode=yes -o IdentitiesOnly=yes -o 
 ready=0
 for attempt in {1..30}; do
   if ssh "${options[@]}" "$SSH_TARGET" 'printf key-login-ok' > "$ROOT/artifacts/ssh-login.log" 2> "$ROOT/artifacts/ssh-ready.log"; then ready=1; break; fi
+  message "Waiting for SSH ($attempt/30)."
   sleep 2
 done
 [[ "$ready" == 1 ]] || { message 'ERROR: SSH did not become ready.' >&2; exit 1; }

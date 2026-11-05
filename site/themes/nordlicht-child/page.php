@@ -4,6 +4,7 @@
  *
  * @package NordlichtChild
  */
+
 get_header();
 ?>
 <main id="main" class="lab-wrap" tabindex="-1">

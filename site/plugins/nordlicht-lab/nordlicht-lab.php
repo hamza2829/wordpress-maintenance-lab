@@ -75,7 +75,14 @@ add_shortcode( 'nordlicht_kontakt', 'wml_contact_shortcode' );
  * @return void
  */
 function wml_register_settings() {
-	register_setting( 'wml_settings', 'wml_contact_settings', array( 'sanitize_callback' => 'wml_sanitize_settings', 'type' => 'array' ) );
+	register_setting(
+		'wml_settings',
+		'wml_contact_settings',
+		array(
+			'sanitize_callback' => 'wml_sanitize_settings',
+			'type'              => 'array',
+		)
+	);
 }
 add_action( 'admin_init', 'wml_register_settings' );
 
@@ -142,7 +149,11 @@ function wml_validate_message( $input ) {
 	if ( ! is_email( $email ) || strlen( $input['message'] ) > 3000 ) {
 		return new WP_Error( 'invalid', __( 'Bitte E-Mail und Nachrichtenlänge prüfen.', 'nordlicht-lab' ) );
 	}
-	return array( 'name' => sanitize_text_field( $input['name'] ), 'email' => $email, 'message' => sanitize_textarea_field( $input['message'] ) );
+	return array(
+		'name'    => sanitize_text_field( $input['name'] ),
+		'email'   => $email,
+		'message' => sanitize_textarea_field( $input['message'] ),
+	);
 }
 
 /**
